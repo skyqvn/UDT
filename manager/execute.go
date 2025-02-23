@@ -1,6 +1,9 @@
 package main
 
 import (
+	"atomicgo.dev/cursor"
+	"atomicgo.dev/keyboard"
+	"atomicgo.dev/keyboard/keys"
 	"fmt"
 	"golang.org/x/sys/windows"
 	"os"
@@ -34,14 +37,12 @@ func execute(command string) {
 			printLogo()
 			setAutoStart(true)
 			fmt.Println("安装成功！\r")
-			fmt.Println("按Enter键结束安装程序\r")
-			fmt.Scanln()
+			pause()
 		case "uninstall":
 			printLogo()
 			setAutoStart(false)
-			fmt.Println("卸载成功！")
-			fmt.Println("按Enter键结束安装程序")
-			fmt.Scanln()
+			fmt.Println("卸载成功！\r")
+			pause()
 		}
 	} else {
 		fmt.Errorf("无管理员权限")
@@ -66,7 +67,7 @@ func stop() {
 	if pid != -1 {
 		err := sendExitSignal(pid)
 		if err != nil {
-			fmt.Printf("关闭进程失败: %v\n", err)
+			fmt.Printf("关闭进程失败: %v\r\n", err)
 			return
 		}
 		fmt.Println("已停止运行UDT\r")
@@ -83,7 +84,7 @@ func start() {
 		CreationFlags: windows.CREATE_NEW_PROCESS_GROUP,
 	}
 	cmd.Start()
-	fmt.Println("已成功启动UDT")
+	fmt.Println("已成功启动UDT\r")
 }
 
 func reboot() {
@@ -98,8 +99,16 @@ func edit() {
 	cmd.Stderr = os.Stderr
 	
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("\nVim编辑失败: %v\n", err)
+		fmt.Printf("Vim编辑失败: %v\r\n", err)
 	}
-	fmt.Println("编辑成功")
+	fmt.Println("编辑成功\r")
 	reboot()
+}
+
+func pause() {
+	cursor.Show()
+	fmt.Print("按任意键继续……")
+	keyboard.Listen(func(key keys.Key) (stop bool, err error) {
+		return true, nil
+	})
 }

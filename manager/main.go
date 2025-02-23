@@ -14,7 +14,7 @@ func main() {
 		err := enableANSI()
 		cursor.Hide()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err, "\r")
 		}
 		// 定义按钮列表
 		buttons := []Button{
@@ -24,7 +24,7 @@ func main() {
 					start()
 					err := runAsAdmin(os.Args[0], "install")
 					if err != nil {
-						fmt.Printf("以管理员权限启动程序失败: %v\n", err)
+						fmt.Printf("以管理员权限启动程序失败: %v\r\n", err)
 					}
 					os.Exit(0)
 				},
@@ -34,7 +34,7 @@ func main() {
 				Action: func() {
 					err := runAsAdmin(os.Args[0], "uninstall")
 					if err != nil {
-						fmt.Printf("以管理员权限启动程序失败: %v\n", err)
+						fmt.Printf("以管理员权限启动程序失败: %v\r\n", err)
 					}
 					os.Exit(0)
 				},
@@ -43,6 +43,7 @@ func main() {
 				Text: "Stop",
 				Action: func() {
 					stop()
+					pause()
 					os.Exit(0)
 				},
 			},
@@ -50,6 +51,7 @@ func main() {
 				Text: "Restart",
 				Action: func() {
 					reboot()
+					pause()
 					os.Exit(0)
 				},
 			},
@@ -57,6 +59,7 @@ func main() {
 				Text: "Edit",
 				Action: func() {
 					edit()
+					pause()
 					os.Exit(0)
 				},
 			},
