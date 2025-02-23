@@ -82,17 +82,15 @@ func scanAndCopyFiles(sourceDir, targetDir string, regexPatterns []string, maxSi
 					log.Printf("Error scanning and copying files: %v", err)
 					return nil
 				}
-				defer func() {
-					err := targetFile.Close()
-					if err != nil {
-						os.Remove(tempFilePath) // 拷贝失败时删除临时文件
-					}
-				}()
 				
 				_, err = io.Copy(targetFile, sourceFile)
 				if err != nil {
 					log.Printf("Error scanning and copying files: %v", err)
 					return nil
+				}
+				err = targetFile.Close()
+				if err != nil {
+					os.Remove(tempFilePath) // 拷贝失败时删除临时文件
 				}
 				if err == nil {
 					if renameErr := os.Rename(tempFilePath, targetFilePath); renameErr != nil {
