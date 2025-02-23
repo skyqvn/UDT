@@ -1,4 +1,4 @@
-rsrc -manifest UDT.manifest -ico icon.ico -o rsrc.syso
+rsrc -manifest UDT.manifest -ico logo.ico -o rsrc.syso
 @REM go build -ldflags="-s -w" -o .\UDT\UDT.exe
 go build -ldflags="-H windowsgui -s -w" -o .\UDT\UDT.exe
 cp .\config.yaml .\UDT\config.yaml
