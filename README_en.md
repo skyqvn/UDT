@@ -1,5 +1,6 @@
 USB Drive Thief (UDT) - Portable USB Monitoring System
 ======================================================
+[中文](./README.md) | English
 
 ```text
  __  __  ____    ______
