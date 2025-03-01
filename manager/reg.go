@@ -7,7 +7,7 @@ import (
 )
 
 // 新增注册表操作函数
-func setAutoStart(enabled bool) error {
+func setAutoStart(enabled bool, k registry.Key) error {
 	// 获取可执行文件路径
 	exePath, err := filepath.Abs("./udt.exe")
 	if err != nil {
@@ -16,7 +16,7 @@ func setAutoStart(enabled bool) error {
 	
 	// 打开注册表项
 	key, err := registry.OpenKey(
-		registry.LOCAL_MACHINE,
+		k,
 		`Software\Microsoft\Windows\CurrentVersion\Run`,
 		registry.ALL_ACCESS,
 	)
@@ -27,7 +27,7 @@ func setAutoStart(enabled bool) error {
 	
 	if enabled {
 		// 设置字符串值
-		err = key.SetStringValue("UDT", exePath)
+		err = key.SetStringValue("UDT", fmt.Sprintf(`"%s"`, exePath))
 	} else {
 		// 删除值
 		err = key.DeleteValue("UDT")

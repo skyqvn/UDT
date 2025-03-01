@@ -34,3 +34,15 @@ targetDir: "./target"
 # a+ 匹配1个及以上数量的a
 regexPatterns:
   - ".*"
+
+# conflictStrategy 用于指定文件冲突时的处理策略。
+# 可选择的值有：
+# - "timestamp": 根据文件的修改时间进行比较，冲突时覆盖目标目录中较旧的文件。
+# - "overwrite": 无论目标文件的修改时间如何，都直接覆盖目标文件。
+# - "skip": 当发现目标文件已存在时，跳过该文件，不进行复制或覆盖操作。
+conflictStrategy: "timestamp"
+
+# excludeVolumeLabels 用于指定需要排除的U盘卷标
+# 在此列出的卷标对应的U盘将不会进行文件复制操作
+excludeVolumeLabels:
+  - "SKY"

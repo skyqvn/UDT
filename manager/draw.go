@@ -12,8 +12,6 @@ import (
 //go:embed logo.txt
 var logo string
 
-var Info string
-
 // Button 定义按钮结构体
 type Button struct {
 	Text   string
@@ -77,7 +75,7 @@ func enableANSI() error {
 }
 
 func showTitle() {
-	fmt.Print("\x1b[1;32mUDT Manager\x1b[0m\r\n")
+	fmt.Print("\x1b[1;32mUDT管理器\x1b[0m\r\n")
 }
 
 func printLogo() {
@@ -95,7 +93,7 @@ func (m *Menu) Draw() {
 	fmt.Print("\x1b[2J\x1b[H") // 清屏
 	showTitle()
 	printLogo()
-	fmt.Print("\x1b[1mFunctions: \x1b[0m\r\n")
+	fmt.Print("\x1b[1m功能: \x1b[0m\r\n")
 	for i, btn := range m.Buttons {
 		if i == m.SelectedIndex {
 			fmt.Printf("> \x1b[7m%s\x1b[0m\r\n", btn.Text)

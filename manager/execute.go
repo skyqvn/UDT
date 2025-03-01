@@ -6,6 +6,7 @@ import (
 	"atomicgo.dev/keyboard/keys"
 	"fmt"
 	"golang.org/x/sys/windows"
+	"golang.org/x/sys/windows/registry"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -33,14 +34,28 @@ func getPid() int {
 func execute(command string) {
 	if isAdmin() {
 		switch command {
-		case "install":
+		case InstallCurrentUser:
+			fmt.Print("\x1b[2J\x1b[H")
 			printLogo()
-			setAutoStart(true)
+			setAutoStart(true, registry.CURRENT_USER)
 			fmt.Println("安装成功！\r")
 			pause()
-		case "uninstall":
+		case InstallAllUsers:
+			fmt.Print("\x1b[2J\x1b[H")
 			printLogo()
-			setAutoStart(false)
+			setAutoStart(true, registry.LOCAL_MACHINE)
+			fmt.Println("安装成功！\r")
+			pause()
+		case UninstallCurrentUser:
+			fmt.Print("\x1b[2J\x1b[H")
+			printLogo()
+			setAutoStart(false, registry.CURRENT_USER)
+			fmt.Println("卸载成功！\r")
+			pause()
+		case UninstallAllUsers:
+			fmt.Print("\x1b[2J\x1b[H")
+			printLogo()
+			setAutoStart(false, registry.LOCAL_MACHINE)
 			fmt.Println("卸载成功！\r")
 			pause()
 		}
@@ -52,14 +67,7 @@ func execute(command string) {
 
 // 获取 Windows 临时目录
 func getTempDir() string {
-	// 全局单例运行
-	return `C:\Windows\Temp`
-	// 用户单例运行
-	// s, ok := os.LookupEnv("TEMP")
-	// if ok {
-	// 	return s
-	// }
-	// return os.TempDir()
+	return os.TempDir()
 }
 
 func stop() {
