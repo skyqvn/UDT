@@ -7,10 +7,9 @@ import (
 )
 
 const (
-	InstallCurrentUser   = "install-current-user"
-	InstallAllUsers      = "install-all-user"
-	UninstallCurrentUser = "uninstall-current-user"
-	UninstallAllUsers    = "uninstall-all-user"
+	InstallCurrentUser = "install-current-user"
+	InstallAllUsers    = "install-all-users"
+	Uninstall          = "uninstall"
 )
 
 func main() {
@@ -32,6 +31,7 @@ func main() {
 						if err != nil {
 							fmt.Printf("以管理员权限启动程序失败: %v\r\n", err)
 						}
+						cursor.Show()
 						os.Exit(0)
 					}
 				},
@@ -47,34 +47,22 @@ func main() {
 						if err != nil {
 							fmt.Printf("以管理员权限启动程序失败: %v\r\n", err)
 						}
+						cursor.Show()
 						os.Exit(0)
 					}
 				},
 			},
 			{
-				Text: "卸载（当前用户）",
+				Text: "卸载",
 				Action: func() {
 					if isAdmin() {
-						execute(UninstallCurrentUser)
+						execute(Uninstall)
 					} else {
-						err := runAsAdmin(os.Args[0], UninstallCurrentUser)
+						err := runAsAdmin(os.Args[0], Uninstall)
 						if err != nil {
 							fmt.Printf("以管理员权限启动程序失败: %v\r\n", err)
 						}
-						os.Exit(0)
-					}
-				},
-			},
-			{
-				Text: "卸载（所有用户）",
-				Action: func() {
-					if isAdmin() {
-						execute(UninstallAllUsers)
-					} else {
-						err := runAsAdmin(os.Args[0], UninstallAllUsers)
-						if err != nil {
-							fmt.Printf("以管理员权限启动程序失败: %v\r\n", err)
-						}
+						cursor.Show()
 						os.Exit(0)
 					}
 				},

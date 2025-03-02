@@ -46,8 +46,12 @@ Copy the folder to the specified directory and run udt.exe.
 
 In the manager, select Install, or execute the following command:
 
-Run with administrative privileges
-Manager installation
+```bash
+# Run as administrator
+manager install-current-user
+# Or
+manager install-all-users
+```
 
 ### Disable startup auto-launch
 

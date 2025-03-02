@@ -56,6 +56,7 @@ func (m *Menu) Run() {
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "监听键盘事件时出错:", err, "\r")
+		pause()
 		os.Exit(1)
 	}
 }
@@ -70,7 +71,9 @@ func enableANSI() error {
 	if err != nil {
 		return err
 	}
-	mode |= windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING
+	mode |= windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING |
+		windows.ENABLE_PROCESSED_OUTPUT |
+		windows.ENABLE_WRAP_AT_EOL_OUTPUT
 	return windows.SetConsoleMode(handle, mode)
 }
 
@@ -90,7 +93,8 @@ func showShortcutHelp() {
 
 // Draw 绘制菜单界面
 func (m *Menu) Draw() {
-	fmt.Print("\x1b[2J\x1b[H") // 清屏
+	fmt.Print("\x1b[H\x1b[2J") // 清屏
+	// fmt.Print("\x1b[2J\x1b[H") // 清屏
 	showTitle()
 	printLogo()
 	fmt.Print("\x1b[1m功能: \x1b[0m\r\n")
@@ -103,4 +107,5 @@ func (m *Menu) Draw() {
 	}
 	showShortcutHelp()
 	fmt.Print("\x1b[0m")
+	os.Stdout.Sync()
 }

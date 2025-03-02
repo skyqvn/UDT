@@ -46,21 +46,17 @@ func execute(command string) {
 			setAutoStart(true, registry.LOCAL_MACHINE)
 			fmt.Println("安装成功！\r")
 			pause()
-		case UninstallCurrentUser:
+		case Uninstall:
 			fmt.Print("\x1b[2J\x1b[H")
 			printLogo()
 			setAutoStart(false, registry.CURRENT_USER)
-			fmt.Println("卸载成功！\r")
-			pause()
-		case UninstallAllUsers:
-			fmt.Print("\x1b[2J\x1b[H")
-			printLogo()
 			setAutoStart(false, registry.LOCAL_MACHINE)
 			fmt.Println("卸载成功！\r")
 			pause()
 		}
 	} else {
 		fmt.Errorf("无管理员权限")
+		pause()
 		os.Exit(1)
 	}
 }

@@ -46,7 +46,9 @@ USB Drive Thief (UDT) - 便携式USB监控系统
 
 ```bash
 # 以管理员权限运行
-manager install
+manager install-current-user
+# 或
+manager install-all-users
 ```
 
 ### 取消开机自启动

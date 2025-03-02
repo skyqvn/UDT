@@ -1,7 +1,8 @@
 package main
 
 import (
-	"os"
+	"fmt"
+	"golang.org/x/sys/windows"
 	"syscall"
 	"unsafe"
 )
@@ -37,6 +38,21 @@ func runAsAdmin(exePath, args string) error {
 }
 
 func isAdmin() bool {
-	_, err := os.Open(`\\.\PHYSICALDRIVE0`)
-	return err == nil
+	var sid *windows.SID
+	err := windows.AllocateAndInitializeSid(
+		&windows.SECURITY_NT_AUTHORITY,
+		2,
+		windows.SECURITY_BUILTIN_DOMAIN_RID,
+		windows.DOMAIN_ALIAS_RID_ADMINS,
+		0, 0, 0, 0, 0, 0,
+		&sid)
+	if err != nil {
+		fmt.Printf("Failed to allocate and initialize SID: %v\n", err)
+		return false
+	}
+	defer windows.FreeSid(sid)
+	
+	token := windows.GetCurrentProcessToken()
+	member, err := token.IsMember(sid)
+	return member && err == nil
 }
