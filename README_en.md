@@ -26,10 +26,14 @@ authorization.
 ## Core Function
 
 ✅ **Running in silent background**
+
 ✅ **Intelligent File Filtering** (Regular Expression Supported)
 File Size Limit (To prevent large files from occupying)
+
 ✅ **Multisample Detection** (Prevent Repeated Execution)
+
 ✅ **Automated Permission Promotion** (UAC Automatic Handling)
+
 ✅ **Log Tracking** (Operation records stored in the system's temporary directory)
 
 ## Compile
@@ -68,6 +72,24 @@ manager.exe uninstall
 
 > Please restart after changes to take effect
 
+> In YAML, if a string has no spaces or special characters, no quotation marks are needed.
+> 
+> If single quotes are used, backslashes (\) are not required for escaping. Single quotes are indicated by two single quotes ('').
+> 
+> If double quotes are used, backslashes (\) can be used for escaping. Double quotes are represented by a backslash followed by double quotes (\").
+> 
+> For example: Hello! You can directly write
+> 
+> Single quotes: 'Don''t' is regarded as Don't
+> 
+> Double quotes: "\"Good!\"" is regarded as "Good!"
+> 
+> Meanwhile, you can use \n for line breaks and other escape characters within double quotes
+> 
+> Regular expressions should use single quotes to avoid escaping
+> 
+> Other usages can be searched by yourself
+
 ```yaml
 # Whether to enable.
 # Automatically exit when set to false.
@@ -82,14 +104,14 @@ maxSizeMB: 1024
 # targetDir represents the target directory for file copying.
 # When a file that matches the regular expression pattern is scanned, it will be copied to this directory.
 # Please ensure that this directory exists and has write permissions.
-targetDir: "./target"
+targetDir: ./target
 
 # regexPatterns is a list of strings, where each string is a regular expression pattern.
 # When scanning files, the file name will be regex - matched. As long as the file name meets one of the regular expressions, the file will be processed (copied to the target directory).
 # File names use the Linux style, i.e., use "/" as the path separator.
 # For example:
-# - ".*" # Matches any file
-# - ".*\.txt$" # Matches all files ending with .txt
+# - '.*' # Matches any file
+# - '.*\.txt$' # Matches all files ending with .txt
 #
 # Brief explanation of regular expression syntax:
 # ^ Matches the start of a line
@@ -102,19 +124,19 @@ targetDir: "./target"
 # \\d{3} Exactly matches 3 digits (note the need for double backslashes)
 # a+ Matches 1 or more occurrences of a
 regexPatterns:
-  - ".*"
+  - '.*'
 
 # conflictStrategy is used to specify the handling strategy when a file conflict occurs.
 # Available options are:
 # - "timestamp": Compare based on the file's modification time. When a conflict occurs, overwrite the older file in the target directory.
 # - "overwrite": Regardless of the target file's modification time, directly overwrite the target file.
 # - "skip": When the target file already exists, skip the file and do not perform the copy or overwrite operation.
-conflictStrategy: "timestamp"
+conflictStrategy: timestamp
 
 # excludeVolumeLabels is used to specify the volume labels of USB drives to be excluded.
 # USB drives with the volume labels listed here will not undergo file copy operations.
 excludeVolumeLabels:
-  - "SKY"
+  - SKY
 
 ```
 
