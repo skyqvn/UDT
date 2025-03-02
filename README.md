@@ -100,14 +100,14 @@ maxSizeMB: 1024
 # targetDir 表示文件复制的目标目录。
 # 当扫描到符合正则表达式模式的文件时，会将这些文件复制到该目录下。
 # 请确保该目录存在且有写入权限。
-targetDir: "./target"
+targetDir: ./target
 
 # regexPatterns 是一个字符串列表，其中每个字符串都是一个正则表达式模式。
 # 在扫描文件时，会对文件名进行正则匹配，只要文件名满足其中一个正则表达式，该文件就会被处理（复制到目标目录）。
 # 文件名使用Linux风格，即使用“/”作为路径分隔符。
 # 比如：
-# - ".*" # 匹配任意文件
-# - ".*\.txt$" # 匹配所有以 .txt 结尾的文件
+# - '.*' # 匹配任意文件
+# - '.*\.txt$' # 匹配所有以 .txt 结尾的文件
 #
 # 正则表达式语法简要说明：
 # ^ 匹配行首
@@ -120,19 +120,19 @@ targetDir: "./target"
 # \\d{3} 精确匹配3个数字（注意需要双反斜杠）
 # a+ 匹配1个及以上数量的a
 regexPatterns:
-  - ".*"
+  - '.*'
 
 # conflictStrategy 用于指定文件冲突时的处理策略。
 # 可选择的值有：
 # - "timestamp": 根据文件的修改时间进行比较，冲突时覆盖目标目录中较旧的文件。
 # - "overwrite": 无论目标文件的修改时间如何，都直接覆盖目标文件。
 # - "skip": 当发现目标文件已存在时，跳过该文件，不进行复制或覆盖操作。
-conflictStrategy: "timestamp"
+conflictStrategy: timestamp
 
 # excludeVolumeLabels 用于指定需要排除的U盘卷标
 # 在此列出的卷标对应的U盘将不会进行文件复制操作
 excludeVolumeLabels:
-  - "SKY"
+  - SKY
 
 ```
 
