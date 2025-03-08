@@ -3,12 +3,11 @@ module UDT
 go 1.23.4
 
 require (
-	github.com/StackExchange/wmi v1.2.1
-	github.com/dlclark/regexp2 v1.11.5
 	github.com/spf13/viper v1.19.0
+	github.com/yusufpapurcu/wmi v1.2.4
 )
 
-require github.com/go-ole/go-ole v1.2.5 // indirect
+require github.com/go-ole/go-ole v1.2.6 // indirect
 
 require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect

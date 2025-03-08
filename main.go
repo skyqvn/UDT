@@ -10,9 +10,9 @@ import (
 	"strings"
 	"syscall"
 	"time"
-
-	"github.com/StackExchange/wmi"
+	
 	"github.com/spf13/viper"
+	"github.com/yusufpapurcu/wmi"
 	"golang.org/x/sys/windows"
 )
 
@@ -44,7 +44,7 @@ func main() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
-
+	
 	// 读取配置文件
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
@@ -53,7 +53,7 @@ func main() {
 			log.Fatalf("读取配置文件时出错: %v", err)
 		}
 	}
-
+	
 	// 从配置文件中获取配置项
 	if !viper.GetBool("enabled") {
 		log.Println("服务已禁用")
@@ -64,7 +64,7 @@ func main() {
 	regexPatterns := viper.GetStringSlice("regexPatterns")
 	conflictStrategy := viper.GetString("conflictStrategy")
 	excludeLabels := viper.GetStringSlice("excludeVolumeLabels")
-
+	
 	var regexes []*regexp.Regexp
 	for _, pattern := range regexPatterns {
 		regex, err := regexp.Compile(pattern)
@@ -73,7 +73,7 @@ func main() {
 		}
 		regexes = append(regexes, regex)
 	}
-
+	
 	// 构建 UDT 目录路径
 	udtDir := filepath.Join(getTempDir(), "UDT")
 	// 检查 UDT 目录是否存在，如果不存在则创建它
@@ -85,7 +85,7 @@ func main() {
 	}
 	// 构建锁文件的完整路径
 	lockFile := filepath.Join(udtDir, "app.lock")
-
+	
 	// 尝试删除锁文件，以确认是否被占用
 	os.Remove(lockFile)
 	f, err := os.OpenFile(lockFile, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
@@ -116,7 +116,7 @@ func main() {
 		f.Close()
 		os.Remove(lockFile)
 	}()
-
+	
 	// 注册信号处理函数，在收到退出信号时释放锁
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs,
@@ -134,10 +134,10 @@ func main() {
 		os.Remove(lockFile)
 		os.Exit(0)
 	}()
-
+	
 	// 用于存储已挂载的 U 盘路径
 	usbDrives := make(map[string]bool, 26)
-
+	
 	for {
 		usbList, err := getUSBDrives()
 		if err == nil {
@@ -156,7 +156,7 @@ func main() {
 					usbDrives[drive] = true
 				}
 			}
-
+			
 			// 处理移除设备
 			for drive := range usbDrives {
 				if _, ok := usbList[drive]; !ok {
@@ -165,7 +165,7 @@ func main() {
 				}
 			}
 		}
-
+		
 		time.Sleep(3 * time.Second)
 	}
 }
@@ -174,7 +174,7 @@ func main() {
 func getUSBDrives() (map[string]string, error) {
 	var disks []win32LogicalDisk
 	err := wmi.Query(query, &disks)
-
+	
 	result := make(map[string]string)
 	for _, d := range disks {
 		result[d.DeviceID] = d.VolumeName
