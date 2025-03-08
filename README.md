@@ -154,7 +154,7 @@ excludeVolumeLabels:
 ### 核心机制
 
 - USB设备检测：Windows GetLogicalDrives API轮询
-- 文件过滤：regexp2 正则引擎
+- 文件过滤：regexp 正则引擎
 - 全局单实例控制：%TEMP%\UDT\app.lock 锁文件
 - 权限管理：AdjustTokenPrivileges 提权
 - 信号处理

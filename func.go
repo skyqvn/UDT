@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/dlclark/regexp2"
-	"golang.org/x/sys/windows"
+	"bufio"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -17,16 +17,7 @@ const (
 )
 
 // 扫描目录下所有文件，并拷贝匹配正则的文件
-func scanAndCopyFiles(sourceDir, targetDir string, regexPatterns []string, maxSizeMB int, conflictStrategy string) error {
-	var regexes []*regexp2.Regexp
-	for _, pattern := range regexPatterns {
-		regex, err := regexp2.Compile(pattern, 0)
-		if err != nil {
-			return err
-		}
-		regexes = append(regexes, regex)
-	}
-	
+func scanAndCopyFiles(sourceDir, targetDir string, regexes []*regexp.Regexp, maxSizeMB int, conflictStrategy string) error {
 	return filepath.Walk(sourceDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Printf("Error scanning files: %v", err)
@@ -42,25 +33,24 @@ func scanAndCopyFiles(sourceDir, targetDir string, regexPatterns []string, maxSi
 		}
 		// 统一转换为UNIX路径格式
 		unixPath := strings.ReplaceAll(relPath, string(filepath.Separator), "/")
-		
+
 		// 对文件名进行正则匹配，只要满足其中一个正则表达式即可
 		for _, regex := range regexes {
-			match, _ := regex.MatchString(unixPath)
+			match := regex.MatchString(unixPath)
 			if match {
-				// 检查文件大小
 				fileSizeMB := info.Size() / (1024 * 1024)
 				if maxSizeMB != -1 && fileSizeMB > int64(maxSizeMB) {
 					log.Printf("跳过文件 %s，因为其大小 %d MB 超过了限制 %d MB", path, fileSizeMB, maxSizeMB)
 					return nil
 				}
-				
+
 				sourceFile, err := os.Open(path)
 				if err != nil {
 					log.Printf("Error scanning and copying files: %v", err)
 					return nil
 				}
 				defer sourceFile.Close()
-				
+
 				relativePath, err := filepath.Rel(sourceDir, path)
 				if err != nil {
 					log.Printf("Error scanning and copying files: %v", err)
@@ -90,14 +80,15 @@ func scanAndCopyFiles(sourceDir, targetDir string, regexPatterns []string, maxSi
 						return nil
 					}
 				}
-				
+
 				targetFile, err := os.Create(tempFilePath)
 				if err != nil {
 					log.Printf("Error scanning and copying files: %v", err)
 					return nil
 				}
-				
-				_, err = io.Copy(targetFile, sourceFile)
+
+				buf := bufio.NewReaderSize(sourceFile, 2*1024*1024) // 2MB缓冲区
+				_, err = io.CopyBuffer(targetFile, buf, make([]byte, 2*1024*1024))
 				if err != nil {
 					targetFile.Close()
 					os.Remove(tempFilePath) // 拷贝失败时删除临时文件
@@ -123,39 +114,51 @@ func scanAndCopyFiles(sourceDir, targetDir string, regexPatterns []string, maxSi
 				break // 只要匹配一个正则表达式就进行拷贝，然后跳出循环
 			}
 		}
-		
+
 		return nil
 	})
-}
-
-// 修改后的USB设备检测函数
-func isUsbDrive(driveLetter string) bool {
-	rootPath := driveLetter + `\`
-	driveType := windows.GetDriveType(windows.StringToUTF16Ptr(rootPath))
-	return driveType == windows.DRIVE_REMOVABLE
-}
-
-// 新增获取卷标函数
-func getVolumeLabel(driveLetter string) string {
-	rootPath := driveLetter + `\`
-	buf := make([]uint16, 256)
-	err := windows.GetVolumeInformation(
-		windows.StringToUTF16Ptr(rootPath),
-		&buf[0],
-		uint32(len(buf)),
-		nil,
-		nil,
-		nil,
-		nil,
-		0)
-	
-	if err != nil {
-		return "Unknown"
-	}
-	return windows.UTF16ToString(buf)
 }
 
 // 获取 Windows 临时目录
 func getTempDir() string {
 	return os.TempDir()
+}
+
+func safeFileName(label string) string {
+	// 定义Windows系统文件名非法字符
+	invalidChars := `\/:*?"<>|`
+
+	// 替换非法字符为下划线
+	result := strings.Map(func(r rune) rune {
+		if strings.ContainsRune(invalidChars, r) {
+			return '_'
+		}
+		return r
+	}, label)
+
+	// 去除首尾空格和点（Windows文件名结尾不允许空格和点）
+	result = strings.TrimRight(result, " .")
+	if result == "" {
+		return "Untitled" // 空文件名保护
+	}
+	if isReservedName(result) {
+		result += "_"
+	}
+	return result
+}
+
+func isReservedName(name string) bool {
+	reserved := []string{
+		"CON", "PRN", "AUX", "NUL",
+		"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+		"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+	}
+
+	upper := strings.ToUpper(name)
+	for _, r := range reserved {
+		if upper == r {
+			return true
+		}
+	}
+	return false
 }

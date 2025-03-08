@@ -74,6 +74,8 @@ func stop() {
 			fmt.Printf("关闭进程失败: %v\r\n", err)
 			return
 		}
+		lockFile := filepath.Join(getTempDir(), "UDT", "app.lock")
+		os.Remove(lockFile)
 		fmt.Println("已停止运行UDT\r")
 		return
 	}
@@ -97,11 +99,11 @@ func reboot() {
 }
 
 func edit() {
-	cmd := exec.Command("vim", "./config.yaml")
+	cmd := exec.Command("notepad", "./config.yaml")
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	
+
 	if err := cmd.Run(); err != nil {
 		fmt.Printf("Vim编辑失败: %v\r\n", err)
 	}

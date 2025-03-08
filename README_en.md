@@ -158,7 +158,7 @@ Execute the relevant commands in the manager
 ### Core mechanism
 
 - USB device detection: Windows GetLogicalDrives API polling
-- File filtering: regexp2 regular expression engine
+- File filtering: regexp regular expression engine
 - Global single instance control: %TEMP%\\UDT\\app.lock lock file
 - Privilege Management: AdjustTokenPrivileges Authorization
 - Signal processing
